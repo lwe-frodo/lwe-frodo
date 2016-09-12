@@ -4,7 +4,9 @@
 
 - Joppe Bos, Craig Costello, Léo Ducas, Ilya Mironov, Michael Naehrig, Valeria Nikolaenko, Ananth Raghunathan, Douglas Stebila.  **Frodo: Take off the ring!  Practical, quantum-secure key exchange from LWE**.  In *ACM Conference on Computer and Communications Security (CCS) 2016*, ACM, October, 2016.  DOI:[10.1145/2976749.2978425](http://dx.doi.org/10.1145/2976749.2978425), Eprint [http://eprint.iacr.org/2016/659](http://eprint.iacr.org/2016/659).
 
-You can [download the PDF](https://github.com/lwe-frodo/lwe-frodo/blob/master/LWE-Frodo-full-version.pdf) of the paper from the Github repository.
+You can [download the PDF](https://github.com/lwe-frodo/lwe-frodo/blob/master/LWE-Frodo-full-version.pdf) of the paper from the GitHub repository.
+
+Python scripts for selecting parameters are available in the [lwe-frodo/parameter-selection](https://github.com/lwe-frodo/parameter-selection) repository.
 
 ## Building
 
