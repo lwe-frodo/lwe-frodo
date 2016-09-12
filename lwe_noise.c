@@ -152,24 +152,24 @@ void lwe_sample_n_binomial32(uint16_t *s, const size_t n) {
  ***********************************************/
 
 /* Approximation to the rounded Gaussian with sigma^2 = 1.25. The Renyi
- * divergence of order 20 between the two is ~1.00208.
+ * divergence of order 25 between the two is ~1.00217.
  * The range of the distribution is [0..3]. Requires 7 bits (plus 1 for the
  * sign).
  */
 const size_t CDF_LENGTH_D1 = 4;
 const uint8_t CDF_D1[4] = {43, 104, 124, 127}; // out of [0, 127]
 
-/* Approximation to the rounded Gaussian with sigma^2 = 1.75. The Renyi
- * divergence of order 5.0 between the two is 1.0033.
- * The range of the distribution is [0..4]. Requires 7 bits (plus 1 for the
+/* Approximation to the rounded Gaussian with sigma^2 = 1.00. The Renyi
+ * divergence of order 40.0 between the two is 1.000193.
+ * The range of the distribution is [0..4]. Requires 11 bits (plus 1 for the
  * sign).
  */
-const size_t CDF_LENGTH_D2 = 4;
-const uint8_t CDF_D2[4] = {48, 110, 126, 127}; // out of [0, 127]
+const size_t CDF_LENGTH_D2 = 5;
+const uint16_t CDF_D2[5] = {784, 1774, 2022, 2046, 2047}; // out of [0, 2047]
 
 /* Approximation to the rounded Gaussian with sigma^2 = 1.75. The Renyi
  * divergence of order 100 between the two is 1.000301.
- * The range of the distribution is [0..5]. Requires 12 bits (plus 1 for the
+ * The range of the distribution is [0..5]. Requires 11 bits (plus 1 for the
  * sign).
  */
 const size_t CDF_LENGTH_D3 = 6;

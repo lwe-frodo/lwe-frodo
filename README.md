@@ -44,7 +44,7 @@ You can run the test harness in continuous mode by typing:
 
 	./test cont
 	
-This will run the test harness indefinitely (hit `Ctrl-C` to stop).  Given that the probability of failure for the default parameters is 2<sup>-36.5</sup>, you should not see any failures unless you run it for several billion iterations.
+This will run the test harness indefinitely (hit `Ctrl-C` to stop).  Given that the probability of failure for the default parameters is 2<sup>-38.9</sup>, you should not see any failures unless you run it for several billion iterations.
 
 ## Parameters
 
