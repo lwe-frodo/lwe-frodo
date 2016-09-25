@@ -111,7 +111,11 @@ void lwe_reconcile(unsigned char *out, uint16_t *w, const unsigned char *hint);
 // computes out = as + e
 // where a (N x N), s,e (N x N_BAR),
 int lwe_key_gen_server_gen_a(unsigned char *out,
-                             uint8_t *seed,  // seed for gen_a
+                             const uint8_t *seed,  // seed for gen_a
+                             const uint16_t *s, const uint16_t *e);
+// Generate-and-multiply: generate A column-wise, multiply by s' on the left.
+int lwe_key_gen_client_gen_a(unsigned char *out,
+                             const uint8_t *seed,  // seed for gen_a
                              const uint16_t *s, const uint16_t *e);
 
 // multiply by s on the left
@@ -119,6 +123,9 @@ int lwe_key_gen_server_gen_a(unsigned char *out,
 // where b (N x N_BAR), s (N_BAR x N), e (N_BAR x N_BAR)
 void lwe_key_derive_client(uint16_t *out, const uint16_t *b, const uint16_t *s,
                            const uint16_t *e);
+// multiply by s on the right
+void lwe_key_derive_server(uint16_t *out, const uint16_t *b,
+                           const uint16_t *s);
 
 // round the entire vector to the nearest multiple of 2^b
 void lwe_key_round(uint16_t *vec, const size_t length, const int b);

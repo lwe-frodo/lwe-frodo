@@ -151,7 +151,7 @@ err:
 
 // Generate-and-multiply: generate A row-wise, multiply by s on the right.
 int lwe_key_gen_server_gen_a(unsigned char *out,
-                             uint8_t *seed,  // seed for genA
+                             const uint8_t *seed,  // seed for genA
                              const uint16_t *s, const uint16_t *e) {
 	// A (N x N)
 	// s,e (N x N_BAR)
@@ -319,7 +319,7 @@ int __lwe_key_gen_server_gen_a(unsigned char *out,
 
 // Generate-and-multiply: generate A column-wise, multiply by s' on the left.
 int lwe_key_gen_client_gen_a(unsigned char *out,
-                             uint8_t *seed,  // seed for gen_a
+                             const uint8_t *seed,  // seed for gen_a
                              const uint16_t *s, const uint16_t *e) {
 	// a (N x N)
 	// s',e' (N_BAR x N)
