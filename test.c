@@ -30,6 +30,9 @@
 static const char rnd_seed[] =
     "string to make the random number generator think it has entropy";
 
+#include "ds_benchmark.h"
+#define BENCH_DURATION_SECS 10
+
 #include "lwe.h"
 #include "lwe_noise.h"
 #include "lwekex.h"
@@ -210,6 +213,57 @@ err:
 	free(counts);
 
 	return ret;
+}
+
+static int bench() {
+
+	int ret = 0;
+
+	LWE_PAIR *alice = NULL;
+	LWE_PAIR *bob = NULL;
+	LWE_REC *rec = NULL;
+	size_t bob_ss_len = LWE_KEY_BITS / 8;
+	uint8_t bob_ss[LWE_KEY_BITS / 8];
+	uint16_t v[LWE_N_BAR * LWE_N_BAR];
+	size_t alice_ss_len = LWE_KEY_BITS / 8;
+	uint8_t alice_ss[LWE_KEY_BITS / 8];
+	uint16_t w[LWE_N_BAR * LWE_N_BAR];
+
+	alice = LWE_PAIR_new();
+	if (alice == NULL) {
+		goto err;
+	}
+	bob = LWE_PAIR_new();
+	if (bob == NULL) {
+		goto err;
+	}
+	rec = LWE_REC_new();
+	if (rec == NULL) {
+		goto err;
+	}
+
+	PRINT_BENCHMARK_INSTRUCTIONS
+
+	printf("\n");
+	printf("========================================================\n");
+	printf("Benchmarking LWE-Frodo-%s\n", LWE_PARAMETERS_NAME);
+	printf("========================================================\n");
+
+	PRINT_TIMER_HEADER
+	TIME_OPERATION_SECONDS(LWE_PAIR_generate_key(alice, 1, NULL), "Alice key pair generation", BENCH_DURATION_SECS)
+	TIME_OPERATION_SECONDS(LWE_PAIR_generate_key(bob, 9, NULL), "Bob key pair generation", BENCH_DURATION_SECS)
+	TIME_OPERATION_SECONDS(LWEKEX_compute_key_bob(bob_ss, bob_ss_len, rec, LWE_PAIR_get_publickey(alice), bob, v), "Bob shared secret computation", BENCH_DURATION_SECS)
+	TIME_OPERATION_SECONDS(LWEKEX_compute_key_alice(alice_ss, alice_ss_len, LWE_PAIR_get_publickey(bob), rec, alice, w), "Alice shared secret computation", BENCH_DURATION_SECS)
+	PRINT_TIMER_FOOTER
+
+	ret = 1;
+
+err:
+	LWE_PAIR_free(alice);
+	LWE_PAIR_free(bob);
+
+	return ret;
+
 }
 
 static int test_lwekex(int single) {
@@ -402,6 +456,8 @@ int main(int argc, char *argv[]) {
 
 	if (argc == 1) {
 		if (!test_lwekex(1)) goto err;
+	} else if (argc == 2 && !strcmp((const char *)argv[1], "bench")) {
+		if (!bench()) goto err;
 	} else if (argc == 2 && !strcmp((const char *)argv[1], "cont")) {
 		printf("Running continuous test. ^C to quit.\n\n");
 		int iterations = 0;

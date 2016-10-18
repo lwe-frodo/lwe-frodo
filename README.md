@@ -46,6 +46,12 @@ You can run the test harness in continuous mode by typing:
 	
 This will run the test harness indefinitely (hit `Ctrl-C` to stop).  Given that the probability of failure for the default parameters is 2<sup>-38.9</sup>, you should not see any failures unless you run it for several billion iterations.
 
+You can get runtime benchmarking results by typing:
+
+	./test bench
+
+In order to obtain accurate benchmarking results, you should disable hyperthreading (a.k.a. hardware multithreading) and TurboBoost.  `./test bench` will output instructions on how to do so.
+
 ## Parameters
 
 The software includes 4 parameters sets, as described in the paper:

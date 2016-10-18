@@ -39,6 +39,7 @@
 #define LWE_N_BAR 8      // Number of vectors chosen by each of the parties.
 #define LWE_KEY_BITS 64  // The length of the reconciled key in bits.
 #define LWE_NOISE_D1   // The noise distribution (see lwe_noise.h).
+#define LWE_PARAMETERS_NAME "challenge"
 #endif
 
 #ifdef LWE_PARAMETERS_CLASSICAL
@@ -48,6 +49,7 @@
 #define LWE_N_BAR 8       // Number of vectors chosen by each of the parties.
 #define LWE_KEY_BITS 128  // The length of the reconciled key in bits.
 #define LWE_NOISE_D2    // The noise distribution (see lwe_noise.h).
+#define LWE_PARAMETERS_NAME "classical"
 #endif
 
 #ifdef LWE_PARAMETERS_RECOMMENDED
@@ -57,6 +59,7 @@
 #define LWE_N_BAR 8       // Number of vectors chosen by each of the parties.
 #define LWE_KEY_BITS 256  // The length of the reconciled key in bits.
 #define LWE_NOISE_D3    // The noise distribution (see lwe_noise.h).
+#define LWE_PARAMETERS_NAME "recommended"
 #endif
 
 #ifdef LWE_PARAMETERS_PARANOID
@@ -66,6 +69,7 @@
 #define LWE_N_BAR 8       // Number of vectors chosen by each of the parties.
 #define LWE_KEY_BITS 256  // The length of the reconciled key in bits.
 #define LWE_NOISE_D4   // The noise distribution (see lwe_noise.h).
+#define LWE_PARAMETERS_NAME "paranoid"
 #endif
 
 #if !defined(LWE_PARAMETERS_CHALLENGE) && !defined(LWE_PARAMETERS_CLASSICAL) && \
