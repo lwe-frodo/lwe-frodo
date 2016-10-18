@@ -42,10 +42,11 @@ int debug_printf(const char *format, ...) {
 void binary_printf(uint64_t n, int bits_num) {
 	int i;
 	for (i = bits_num - 1; i >= 0; i--) {
-		if ((n >> i) & 1)
+		if ((n >> i) & 1) {
 			printf("1");
-		else
+		} else {
 			printf("0");
+		}
 	}
 }
 
@@ -80,7 +81,9 @@ LWE_PARAM *LWE_PARAM_new(void) {
 }
 
 void LWE_PARAM_free(LWE_PARAM *r) {
-	if (r == NULL) return;
+	if (r == NULL) {
+		return;
+	}
 	if (r->seed != NULL) {
 		bzero(r->seed, LWE_SEED_LENGTH);
 		free(r->seed);
@@ -104,7 +107,9 @@ LWE_PUB *LWE_PUB_new(void) {
 }
 
 void LWE_PUB_free(LWE_PUB *r) {
-	if (r == NULL) return;
+	if (r == NULL) {
+		return;
+	}
 	LWE_PARAM_free(r->param);
 	bzero(r->b, LWE_PUB_LENGTH);
 	free(r->b);
@@ -125,7 +130,9 @@ LWE_PAIR *LWE_PAIR_new(void) {
 }
 
 void LWE_PAIR_free(LWE_PAIR *r) {
-	if (r == NULL) return;
+	if (r == NULL) {
+		return;
+	}
 	LWE_PUB_free(r->pub);
 	bzero(r->s, LWE_N * LWE_N_BAR * sizeof(uint16_t));
 	free(r->s);
@@ -148,7 +155,9 @@ LWE_REC *LWE_REC_new(void) {
 }
 
 void LWE_REC_free(LWE_REC *r) {
-	if (r == NULL) return;
+	if (r == NULL) {
+		return;
+	}
 	bzero(r->c, LWE_REC_HINT_LENGTH);
 	free(r->c);
 	bzero((void *)r, sizeof(LWE_REC));
@@ -191,7 +200,9 @@ int i2o_LWE_PUB(LWE_PUB *pub, unsigned char **out) {
 
 	if (out == NULL || buf_len == 0)
 		/* out == NULL => just return the length of the octet string */
+	{
 		return buf_len;
+	}
 
 	if (*out == NULL) {
 		if ((*out = OPENSSL_malloc(buf_len)) == NULL) {
@@ -202,7 +213,9 @@ int i2o_LWE_PUB(LWE_PUB *pub, unsigned char **out) {
 
 	memcpy(*out, pub->b, LWE_PUB_LENGTH);
 
-	if (!new_buffer) *out += buf_len;
+	if (!new_buffer) {
+		*out += buf_len;
+	}
 	return buf_len;
 }
 
@@ -236,7 +249,9 @@ int i2o_LWE_REC(LWE_REC *rec, unsigned char **out) {
 
 	if (out == NULL || buf_len == 0)
 		/* out == NULL => just return the length of the octet string */
+	{
 		return buf_len;
+	}
 
 	if (*out == NULL) {
 		if ((*out = OPENSSL_malloc(buf_len)) == NULL) {
@@ -247,13 +262,17 @@ int i2o_LWE_REC(LWE_REC *rec, unsigned char **out) {
 
 	memcpy(*out, (unsigned char *)rec->c, buf_len);
 
-	if (!new_buffer) *out += buf_len;
+	if (!new_buffer) {
+		*out += buf_len;
+	}
 	return buf_len;
 }
 
 /* Get public key from a key pair */
 LWE_PUB *LWE_PAIR_get_publickey(LWE_PAIR *pair) {
-	if (pair == NULL) return NULL;
+	if (pair == NULL) {
+		return NULL;
+	}
 	return pair->pub;
 }
 
@@ -274,10 +293,11 @@ int LWE_PAIR_generate_key(LWE_PAIR *key, char isForServer,
 		goto err;
 	}
 
-	if (seed != NULL)
+	if (seed != NULL) {
 		memcpy(key->pub->param->seed, seed, LWE_SEED_LENGTH);
-	else  // sample the seed using the standard PRNG
+	} else { // sample the seed using the standard PRNG
 		RAND_bytes(key->pub->param->seed, LWE_SEED_LENGTH);
+	}
 
 	e = (uint16_t *)malloc(LWE_N * LWE_N_BAR * sizeof(uint16_t));
 	if (e == NULL) {
@@ -343,8 +363,9 @@ int LWEKEX_compute_key_alice(
 	int ret = -1;
 	int has_w = (w != NULL);
 
-	if (!has_w)
+	if (!has_w) {
 		w = (uint16_t *)malloc(LWE_N_BAR * LWE_N_BAR * sizeof(uint16_t));
+	}
 
 	unsigned char *ka = (unsigned char *)malloc((LWE_KEY_BITS >> 3) *
 	                    sizeof(unsigned char));
@@ -392,8 +413,9 @@ int LWEKEX_compute_key_alice(
 #endif
 
 	/* no KDF, just copy as much as we can */
-	if (outlen > (LWE_KEY_BITS >> 3) * sizeof(unsigned char))
+	if (outlen > (LWE_KEY_BITS >> 3) * sizeof(unsigned char)) {
 		outlen = (LWE_KEY_BITS >> 3) * sizeof(unsigned char);
+	}
 	memcpy(out, (unsigned char *)ka, outlen);
 	ret = outlen;
 
@@ -423,8 +445,9 @@ int LWEKEX_compute_key_bob(void *out, size_t outlen, LWE_REC *reconciliation,
 	int ret = -1;
 	int has_v = (v != NULL);
 
-	if (!has_v)
+	if (!has_v) {
 		v = (uint16_t *)malloc(LWE_N_BAR * LWE_N_BAR * sizeof(uint16_t));
+	}
 	unsigned char *kb = (unsigned char *)malloc((LWE_KEY_BITS >> 3) *
 	                    sizeof(unsigned char));
 
@@ -504,8 +527,9 @@ int LWEKEX_compute_key_bob(void *out, size_t outlen, LWE_REC *reconciliation,
 #endif
 
 	/* no KDF, just copy as much as we can */
-	if (outlen > (LWE_KEY_BITS >> 3) * sizeof(unsigned char))
+	if (outlen > (LWE_KEY_BITS >> 3) * sizeof(unsigned char)) {
 		outlen = (LWE_KEY_BITS >> 3) * sizeof(unsigned char);
+	}
 	memcpy(out, (unsigned char *)kb, outlen);
 	ret = outlen;
 

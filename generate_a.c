@@ -44,16 +44,18 @@ int main(int argc, char *argv[]) {
 		exit(1);
 	}
 	for (i = 0; i < N; i++)
-		for (j = 0; j < N; j++)
+		for (j = 0; j < N; j++) {
 			lwe_a_transpose[j * N + i] = lwe_a[i * N + j];
+		}
 
 	fprintf(f, "#ifndef _LWE_A_H_\n#define _LWE_A_H_\n\n");
 	fprintf(f, "uint16_t lwe_a[%d * %d] = {\n", N, N);
 
 	for (i = 0; i < N * N; i += 8) {
 		fprintf(f, "  ");
-		for (j = 0; j < 8; j++)
+		for (j = 0; j < 8; j++) {
 			fprintf(f, "0x%04X, ", lwe_a[i + j]);
+		}
 		fprintf(f, "\n");
 	}
 	fprintf(f, "};\n\n");
@@ -62,8 +64,9 @@ int main(int argc, char *argv[]) {
 
 	for (i = 0; i < N * N; i += 8) {
 		fprintf(f, "  ");
-		for (j = 0; j < 8; j++)
+		for (j = 0; j < 8; j++) {
 			fprintf(f, "0x%04X, ", lwe_a_transpose[i + j]);
+		}
 		fprintf(f, "\n");
 	}
 	fprintf(f, "};\n#endif /* _LWE_A_H_ */");

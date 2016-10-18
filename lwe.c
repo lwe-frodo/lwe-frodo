@@ -64,8 +64,9 @@ void lwe_reconcile(unsigned char *out, uint16_t *w, const unsigned char *hint) {
 	lwe_key_round_hints(w, LWE_N_BAR * LWE_N_BAR, LWE_LOG2_Q - LWE_EXTRACTED_BITS,
 	                    hint);
 	int i;
-	for (i = 0; i < LWE_N_BAR * LWE_N_BAR; i++)
-		w[i] >>= LWE_LOG2_Q - LWE_EXTRACTED_BITS;  // drop bits that were zeroed out
+	for (i = 0; i < LWE_N_BAR * LWE_N_BAR; i++) {
+		w[i] >>= LWE_LOG2_Q - LWE_EXTRACTED_BITS;    // drop bits that were zeroed out
+	}
 	lwe_pack(out, LWE_KEY_BITS / 8, w, LWE_N_BAR * LWE_N_BAR, LWE_EXTRACTED_BITS);
 }
 
@@ -145,7 +146,9 @@ int gen_a(uint16_t *a, const uint8_t *seed, const uint8_t transpose) {
 	ret = 1;
 
 err:
-	if (aes_ctx != NULL) EVP_CIPHER_CTX_free(aes_ctx);
+	if (aes_ctx != NULL) {
+		EVP_CIPHER_CTX_free(aes_ctx);
+	}
 	return ret;
 }
 
@@ -181,8 +184,9 @@ int lwe_key_gen_server_gen_a(unsigned char *out,
 	}
 
 	for (i = 0; i < LWE_N; i++)
-		for (j = 0; j < LWE_N_BAR; j++)
+		for (j = 0; j < LWE_N_BAR; j++) {
 			out_unpacked[i * LWE_N_BAR + j] = e[i * LWE_N_BAR + j];
+		}
 
 	size_t a_rowlen = LWE_N * sizeof(int16_t);
 	a_row = (uint16_t *)OPENSSL_malloc(a_rowlen);
@@ -197,8 +201,9 @@ int lwe_key_gen_server_gen_a(unsigned char *out,
 	}
 
 	for (j = 0; j < LWE_N; j++)
-		for (k = 0; k < LWE_N_BAR; k++)
+		for (k = 0; k < LWE_N_BAR; k++) {
 			s_transpose[k * LWE_N + j] = s[j * LWE_N_BAR + k];
+		}
 
 	for (i = 0; i < LWE_N; i++) {  // go through A's rows
 		memset(a_row, 0, a_rowlen);
@@ -223,8 +228,9 @@ int lwe_key_gen_server_gen_a(unsigned char *out,
 
 		for (k = 0; k < LWE_N_BAR; k++) {
 			uint16_t sum = 0;
-			for (j = 0; j < LWE_N; j++)  // matrix-vector multiplication happens here
+			for (j = 0; j < LWE_N; j++) { // matrix-vector multiplication happens here
 				sum += a_row[j] * s_transpose[k * LWE_N + j];
+			}
 			out_unpacked[i * LWE_N_BAR + k] += sum;
 			out_unpacked[i * LWE_N_BAR + k] %= LWE_Q;
 		}
@@ -235,7 +241,9 @@ int lwe_key_gen_server_gen_a(unsigned char *out,
 	ret = 1;
 
 err:
-	if (aes_ctx != NULL) EVP_CIPHER_CTX_free(aes_ctx);
+	if (aes_ctx != NULL) {
+		EVP_CIPHER_CTX_free(aes_ctx);
+	}
 
 	if (out_unpacked != NULL) {
 		OPENSSL_cleanse(out_unpacked, LWE_N_BAR * LWE_N * sizeof(uint16_t));
@@ -279,8 +287,9 @@ int __lwe_key_gen_server_gen_a(unsigned char *out,
 	}
 
 	for (j = 0; j < LWE_N; j++)
-		for (k = 0; k < LWE_N_BAR; k++)
+		for (k = 0; k < LWE_N_BAR; k++) {
 			s_transpose[k * LWE_N + j] = s[j * LWE_N_BAR + k];
+		}
 
 	uint16_t *a = (uint16_t *)OPENSSL_malloc(LWE_N * LWE_N * sizeof(int16_t));
 	if (a == NULL) {
@@ -295,8 +304,9 @@ int __lwe_key_gen_server_gen_a(unsigned char *out,
 	for (i = 0; i < LWE_N; i++) {
 		for (k = 0; k < LWE_N_BAR; k++) {
 			uint16_t sum = e[index];
-			for (j = 0; j < LWE_N; j++)
+			for (j = 0; j < LWE_N; j++) {
 				sum += (uint16_t)a[i * LWE_N + j] * s_transpose[k * LWE_N + j];
+			}
 
 			out_unpacked[index] =
 			    sum % LWE_Q;  // not really necessary since LWE_Q is a power of 2.
@@ -349,7 +359,9 @@ int lwe_key_gen_client_gen_a(unsigned char *out,
 	}
 
 	for (i = 0; i < LWE_N_BAR; i++)
-		for (j = 0; j < LWE_N; j++) out_unpacked[i * LWE_N + j] = e[i * LWE_N + j];
+		for (j = 0; j < LWE_N; j++) {
+			out_unpacked[i * LWE_N + j] = e[i * LWE_N + j];
+		}
 
 	size_t a_colslen = LWE_N * LWE_STRIPE_STEP * sizeof(int16_t);
 	// a_cols stores 8 columns of A at a time.
@@ -384,14 +396,16 @@ int lwe_key_gen_client_gen_a(unsigned char *out,
 
 		// transpose a_cols to have access to it in the column-major order.
 		for (i = 0; i < LWE_N; i++)
-			for (k = 0; k < LWE_STRIPE_STEP; k++)
+			for (k = 0; k < LWE_STRIPE_STEP; k++) {
 				a_cols_t[k * LWE_N + i] = a_cols[i * LWE_STRIPE_STEP + k];
+			}
 
 		for (i = 0; i < LWE_N_BAR; i++)
 			for (k = 0; k < LWE_STRIPE_STEP; k++) {
 				uint16_t sum = 0;
-				for (j = 0; j < LWE_N; j++)
+				for (j = 0; j < LWE_N; j++) {
 					sum += s[i * LWE_N + j] * a_cols_t[k * LWE_N + j];
+				}
 				out_unpacked[i * LWE_N + kk + k] += sum;
 				out_unpacked[i * LWE_N + kk + k] %= LWE_Q;
 			}
@@ -402,7 +416,9 @@ int lwe_key_gen_client_gen_a(unsigned char *out,
 	ret = 1;
 
 err:
-	if (aes_ctx != NULL) EVP_CIPHER_CTX_free(aes_ctx);
+	if (aes_ctx != NULL) {
+		EVP_CIPHER_CTX_free(aes_ctx);
+	}
 
 	if (out_unpacked != NULL) {
 		OPENSSL_cleanse(out_unpacked, LWE_N_BAR * LWE_N * sizeof(uint16_t));
@@ -454,8 +470,9 @@ int __lwe_key_gen_client_gen_a(unsigned char *out,
 		for (i = 0; i < LWE_N; i++) {
 			uint16_t sum = e[index];
 
-			for (j = 0; j < LWE_N; j++)
+			for (j = 0; j < LWE_N; j++) {
 				sum += s[k * LWE_N + j] * a_transpose[i * LWE_N + j];
+			}
 
 			out_unpacked[index] =
 			    sum % LWE_Q;  // not really necessary since LWE_Q is a power of 2.
@@ -518,7 +535,9 @@ void lwe_key_round(uint16_t *vec, const size_t length, const int b) {
 	size_t i;
 	uint16_t negmask = ~((1 << b) - 1);
 	uint16_t half = b > 0 ? 1 << (b - 1) : 0;
-	for (i = 0; i < length; i++) vec[i] = (vec[i] + half) & negmask;
+	for (i = 0; i < length; i++) {
+		vec[i] = (vec[i] + half) & negmask;
+	}
 }
 
 // Round all elements of a vector to the multiple of 2^b, with a hint for the
@@ -585,8 +604,9 @@ void lwe_pack(unsigned char *out, const size_t outlen, const uint16_t *in,
 					w = in[j];
 					bits = lsb;
 					j++;
-				} else
-					break;  // the input vector is exhausted
+				} else {
+					break;    // the input vector is exhausted
+				}
 			}
 		}
 		if (b == 8) {  // out[i] is filled in
@@ -635,8 +655,9 @@ void lwe_unpack(uint16_t *out, const size_t outlen, const unsigned char *in,
 					w = in[j];
 					bits = 8;
 					j++;
-				} else
-					break;  // the input vector is exhausted
+				} else {
+					break;    // the input vector is exhausted
+				}
 			}
 		}
 		if (b == lsb) {  // out[i] is filled in

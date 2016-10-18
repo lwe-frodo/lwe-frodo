@@ -40,13 +40,15 @@ static const char rnd_seed[] =
 void test_binary_printf(uint64_t n, int bits_num) {
 	int i;
 	for (i = bits_num - 1; i >= 0; i--) {
-		if ((n >> i) & 1)
+		if ((n >> i) & 1) {
 			printf("1");
-		else
+		} else {
 			printf("0");
+		}
 
-		if (i % 4 == 0)
+		if (i % 4 == 0) {
 			printf(" ");
+		}
 	}
 }
 
@@ -65,19 +67,25 @@ static int test_pack_unpack(uint16_t *in, size_t inlen,
 	}
 
 	printf("Packing ");
-	for (i = 0; i < inlen; i++) printf("%04X ", in[i]);
+	for (i = 0; i < inlen; i++) {
+		printf("%04X ", in[i]);
+	}
 	printf("\n");
 
 	lwe_pack(v_packed, packed_len, in, inlen, lsb);
 
 	printf("Packed result ");
-	for (i = 0; i < packed_len; i++) printf("%02X ", v_packed[i]);
+	for (i = 0; i < packed_len; i++) {
+		printf("%02X ", v_packed[i]);
+	}
 	printf("\n");
 
 	lwe_unpack(v_unpacked, inlen, v_packed, packed_len, lsb);
 
 	printf("Unpacked result ");
-	for (i = 0; i < inlen; i++) printf("%04X ", v_unpacked[i]);
+	for (i = 0; i < inlen; i++) {
+		printf("%04X ", v_unpacked[i]);
+	}
 	printf("\n");
 
 	uint16_t mask = (1 << lsb) - 1;
@@ -85,7 +93,9 @@ static int test_pack_unpack(uint16_t *in, size_t inlen,
 	int match = 1;
 
 	for (i = 0; i < inlen; i++)
-		if ((in[i] ^ v_unpacked[i]) & mask) match = 0;
+		if ((in[i] ^ v_unpacked[i]) & mask) {
+			match = 0;
+		}
 	if (!match) {
 		fprintf(stderr, "Pack/unpack failed to match\n");
 		goto err;
@@ -108,8 +118,9 @@ static int test_packing_unpacking() {
 	uint16_t c[5] = {0x0160, 0x0270, 0x0380, 0x0490, 0x05A0};
 
 	if (!test_pack_unpack(a, 3, 8) || !test_pack_unpack(b, 4, 4) ||
-	        !test_pack_unpack(c, 5, 9))
+	        !test_pack_unpack(c, 5, 9)) {
 		return 0;
+	}
 
 	return 1;
 }
@@ -136,7 +147,9 @@ static int test_sampling() {
 
 	s = (uint16_t *)malloc(LWE_N * LWE_N_BAR * sizeof(uint16_t));
 
-	if ((counts == NULL) || (s == NULL)) goto err;
+	if ((counts == NULL) || (s == NULL)) {
+		goto err;
+	}
 
 	memset(counts, 0, sizeof(uint32_t) * 2 * max_noise);
 
@@ -164,13 +177,14 @@ static int test_sampling() {
 		if (v > 0)
 			expect = .5 * (double)(LWE_CDF_TABLE[v] - LWE_CDF_TABLE[v - 1]) /
 			         cdf_scale * total;
-		else
+		else {
 			expect = (double)(LWE_CDF_TABLE[0] + 1) / cdf_scale * total;
+		}
 
 		if (expect == 0) {
-			if (counts[i] == 0)
+			if (counts[i] == 0) {
 				continue;
-			else {
+			} else {
 				fprintf(stderr,
 				        "Element %d of probability 0%% is output by the sampling "
 				        "procedure\n",
@@ -193,18 +207,20 @@ static int test_sampling() {
 	       df);
 
 	double chi_squared_threshold;
-	if (df == 7)
-		chi_squared_threshold = 24.322; // p-value = .999
-	else if (df == 13)
-		chi_squared_threshold = 34.528; // p-value = .999
-	else
+	if (df == 7) {
+		chi_squared_threshold = 24.322;    // p-value = .999
+	} else if (df == 13) {
+		chi_squared_threshold = 34.528;    // p-value = .999
+	} else {
 		chi_squared_threshold = 2 * df;
+	}
 
 	if (chi_squared > chi_squared_threshold) {
 		printf("Chi-squared test failed.\n");
 		//  goto err; // terrible fit! May abort here, but go on with other tests.
-	} else
+	} else {
 		printf("Chi-squared test passed.\n");
+	}
 
 	ret = 1;
 
@@ -301,20 +317,32 @@ static int test_lwekex(int single) {
 
 	if (single) {
 		printf("Testing packing/unpacking\n");
-		if (!test_packing_unpacking()) goto err;
+		if (!test_packing_unpacking()) {
+			goto err;
+		}
 	}
 
 	if (single) {
 		printf("Testing sampling routines\n");
-		if (!test_sampling()) goto err;
+		if (!test_sampling()) {
+			goto err;
+		}
 	}
 
-	if (single) printf("Testing key generation  \n");
+	if (single) {
+		printf("Testing key generation  \n");
+	}
 
-	if (single) printf("Generating key for Alice (Server)\n");
-	if (!LWE_PAIR_generate_key(alice, 1, NULL)) goto err;
+	if (single) {
+		printf("Generating key for Alice (Server)\n");
+	}
+	if (!LWE_PAIR_generate_key(alice, 1, NULL)) {
+		goto err;
+	}
 	apublen = i2o_LWE_PUB(LWE_PAIR_get_publickey(alice), &apubbuf);
-	if (single) printf("  public B (unpacked, %d bytes) = ", (int)apublen);
+	if (single) {
+		printf("  public B (unpacked, %d bytes) = ", (int)apublen);
+	}
 	if (apublen <= 0) {
 		fprintf(stderr, "Error in LWEKEX routines\n");
 		ret = 0;
@@ -325,8 +353,12 @@ static int test_lwekex(int single) {
 		       apubbuf[1], apubbuf[3], apubbuf[4], apubbuf[apublen - 1]);
 	}
 
-	if (single) printf("Generating key for Bob (Client)\n");
-	if (!LWE_PAIR_generate_key(bob, 0, alice->pub->param->seed)) goto err;
+	if (single) {
+		printf("Generating key for Bob (Client)\n");
+	}
+	if (!LWE_PAIR_generate_key(bob, 0, alice->pub->param->seed)) {
+		goto err;
+	}
 	bpublen = i2o_LWE_PUB(LWE_PAIR_get_publickey(bob), &bpubbuf);
 	if (single) {
 		printf("  public B' (unpacked, %d bytes) = ", (int)bpublen);
@@ -334,7 +366,9 @@ static int test_lwekex(int single) {
 		       bpubbuf[1], bpubbuf[3], bpubbuf[4], bpubbuf[apublen - 1]);
 	}
 
-	if (single) printf("Testing Bob shared secret generation \n");
+	if (single) {
+		printf("Testing Bob shared secret generation \n");
+	}
 
 	bsslen = 160 / 8;
 	bssbuf = (unsigned char *)malloc(bsslen);
@@ -357,7 +391,9 @@ static int test_lwekex(int single) {
 		printf("\n");
 	}
 
-	if (single) printf("Reconstructing Bob's values \n");
+	if (single) {
+		printf("Reconstructing Bob's values \n");
+	}
 
 	// if (single) printf("  Bob's key reconstruction from string \n");
 	if (o2i_LWE_PUB(&bob_reconstructed, bpubbuf, bpublen) == NULL) {
@@ -375,7 +411,9 @@ static int test_lwekex(int single) {
 		goto err;
 	}
 
-	if (single) printf("Testing Alice shared secret generation \n");
+	if (single) {
+		printf("Testing Alice shared secret generation \n");
+	}
 
 	asslen = 160 / 8;
 	assbuf = (unsigned char *)malloc(asslen);
@@ -397,7 +435,9 @@ static int test_lwekex(int single) {
 		}
 		ret = 0;
 	} else {
-		if (single) printf("ok!\n");
+		if (single) {
+			printf("ok!\n");
+		}
 		ret = 1;
 	}
 
@@ -407,7 +447,9 @@ static int test_lwekex(int single) {
 		for (i = 0; i < LWE_N_BAR * LWE_N_BAR; i++) {
 			printf("%04X", v[i] ^ w[i]);
 			// printf("%04X %04X", v[i], w[i]);
-			if (i + 1 < LWE_N_BAR * LWE_N_BAR) printf(", ");
+			if (i + 1 < LWE_N_BAR * LWE_N_BAR) {
+				printf(", ");
+			}
 		}
 		printf("]\n");
 
@@ -420,15 +462,21 @@ static int test_lwekex(int single) {
 		int max = 0;
 		for (i = 0; i < LWE_N_BAR * LWE_N_BAR; i++) {
 			int64_t diff = (int64_t)v[i] - w[i];
-			if (diff < 0) diff = -diff;
+			if (diff < 0) {
+				diff = -diff;
+			}
 			count_bits = 0;
 			while (diff != 0) {
 				count_bits++;
 				diff >>= 1;
 			}
-			if (count_bits > max) max = count_bits;
+			if (count_bits > max) {
+				max = count_bits;
+			}
 			printf("%i", count_bits);
-			if (i + 1 < LWE_N_BAR * LWE_N_BAR) printf(", ");
+			if (i + 1 < LWE_N_BAR * LWE_N_BAR) {
+				printf(", ");
+			}
 		}
 		printf("], MAX = %i\n", max);
 	}
@@ -455,9 +503,13 @@ int main(int argc, char *argv[]) {
 	RAND_seed(rnd_seed, sizeof rnd_seed);
 
 	if (argc == 1) {
-		if (!test_lwekex(1)) goto err;
+		if (!test_lwekex(1)) {
+			goto err;
+		}
 	} else if (argc == 2 && !strcmp((const char *)argv[1], "bench")) {
-		if (!bench()) goto err;
+		if (!bench()) {
+			goto err;
+		}
 	} else if (argc == 2 && !strcmp((const char *)argv[1], "cont")) {
 		printf("Running continuous test. ^C to quit.\n\n");
 		int iterations = 0;
@@ -472,7 +524,9 @@ int main(int argc, char *argv[]) {
 			if ((iterations % 100) == 0) {
 				printf("Iterations: %d, failures: %d, elapsed time: %ld\n",
 				       iterations, failures, time(NULL) - starttime);
-				if (iterations > (1 << 20)) break;
+				if (iterations > (1 << 20)) {
+					break;
+				}
 			}
 		}
 	} else if (argc == 2 && !strcmp((const char *)argv[1], "recmy")) {
@@ -548,7 +602,9 @@ int main(int argc, char *argv[]) {
 			if ((iterations % 100000) == 0) {
 				printf("Iterations: %d, failures: %d\n",
 				       iterations, failures);
-				if (iterations > (1 << 30)) break;
+				if (iterations > (1 << 30)) {
+					break;
+				}
 			}
 		}
 		free(e);
@@ -650,7 +706,9 @@ int main(int argc, char *argv[]) {
 			if ((iterations % 100000) == 0) {
 				printf("Iterations: %d, failures: %d\n",
 				       iterations, failures);
-				if (iterations > (1 << 30)) break;
+				if (iterations > (1 << 30)) {
+					break;
+				}
 			}
 		}
 		free(e);

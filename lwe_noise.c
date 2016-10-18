@@ -56,10 +56,12 @@ static EVP_CIPHER_CTX *aes_ctx_create() {
 
 static void randombuff(EVP_CIPHER_CTX *aes_ctx, unsigned char *buff, int length) {
 	memset(buff, 0, length);
-	if (1 != EVP_EncryptUpdate(aes_ctx, buff, &length, buff, length))
+	if (1 != EVP_EncryptUpdate(aes_ctx, buff, &length, buff, length)) {
 		fprintf(stderr, "EVP error\n");
-	if (1 != EVP_EncryptFinal_ex(aes_ctx, buff, &length))
+	}
+	if (1 != EVP_EncryptFinal_ex(aes_ctx, buff, &length)) {
 		fprintf(stderr, "EVP error\n");
+	}
 }
 
 /**************************
@@ -80,8 +82,9 @@ void lwe_sample_n_binomial24(uint16_t *s, const size_t n) {
 	// Runs in constant time. Can be sped up with compiler intrinsics.
 
 	size_t rndlen = 3 * n;  // 24 bits of uniform randomness per output element
-	if (rndlen % 8 != 0)
-		rndlen += 8 - (rndlen % 8);  // force rndlen be divisible by 8
+	if (rndlen % 8 != 0) {
+		rndlen += 8 - (rndlen % 8);    // force rndlen be divisible by 8
+	}
 
 	uint64_t *rnd = (uint64_t *)malloc(rndlen);
 	if (rnd == NULL) {
@@ -102,12 +105,15 @@ void lwe_sample_n_binomial24(uint16_t *s, const size_t n) {
 		// the corresponding bytes of rnd[0], rnd[1], rnd[2].
 
 		size_t bound = i + 8 < n ? 8 : n - i;  // min(8, n - i)
-		for (j = 0; j < bound; j++)
+		for (j = 0; j < bound; j++) {
 			s[i + j] = (uint16_t)((sum >> (j * 8)) & 0xFF) - 12;
+		}
 
 		ptr_rnd += 3;
 	}
-	if (aes_ctx) EVP_CIPHER_CTX_free(aes_ctx);
+	if (aes_ctx) {
+		EVP_CIPHER_CTX_free(aes_ctx);
+	}
 	bzero(rnd, rndlen);
 	free(rnd);
 }
@@ -138,9 +144,13 @@ void lwe_sample_n_binomial32(uint16_t *s, const size_t n) {
 	}
 	EVP_CIPHER_CTX *aes_ctx = aes_ctx_create();
 	randombuff(aes_ctx, (unsigned char *)rnd, rndlen);
-	if (aes_ctx) EVP_CIPHER_CTX_free(aes_ctx);
+	if (aes_ctx) {
+		EVP_CIPHER_CTX_free(aes_ctx);
+	}
 	size_t i;
-	for (i = 0; i < n; i++) s[i] = count_bits32(rnd[i]) - 16;
+	for (i = 0; i < n; i++) {
+		s[i] = count_bits32(rnd[i]) - 16;
+	}
 	bzero(rnd, rndlen);
 	free(rnd);
 }
@@ -214,7 +224,9 @@ void lwe_sample_n_inverse_12(uint16_t *s, size_t n) {
 
 	EVP_CIPHER_CTX *aes_ctx = aes_ctx_create();
 	randombuff(aes_ctx, (unsigned char *)rnd, rndlen);
-	if (aes_ctx) EVP_CIPHER_CTX_free(aes_ctx);
+	if (aes_ctx) {
+		EVP_CIPHER_CTX_free(aes_ctx);
+	}
 
 	size_t i;
 
@@ -242,7 +254,9 @@ void lwe_sample_n_inverse_12(uint16_t *s, size_t n) {
 		// Assuming that sign1 is either 0 or 1, flips sample1 iff sign1 = 1
 		s[i] = ((-sign1) ^ sample1) + sign1;
 
-		if (i + 1 < n) s[i + 1] = ((-sign2) ^ sample2) + sign2;
+		if (i + 1 < n) {
+			s[i + 1] = ((-sign2) ^ sample2) + sign2;
+		}
 	}
 
 	bzero(rnd, rndlen);
@@ -264,7 +278,9 @@ void lwe_sample_n_inverse_16(uint16_t *s, size_t n) {
 
 	EVP_CIPHER_CTX *aes_ctx = aes_ctx_create();
 	randombuff(aes_ctx, (unsigned char *)rndvec, rndlen);
-	if (aes_ctx) EVP_CIPHER_CTX_free(aes_ctx);
+	if (aes_ctx) {
+		EVP_CIPHER_CTX_free(aes_ctx);
+	}
 
 	size_t i, j;
 
@@ -302,7 +318,9 @@ void lwe_sample_n_inverse_8(uint16_t *s, size_t n) {
 
 	EVP_CIPHER_CTX *aes_ctx = aes_ctx_create();
 	randombuff(aes_ctx, (unsigned char *)rndvec, rndlen);
-	if (aes_ctx) EVP_CIPHER_CTX_free(aes_ctx);
+	if (aes_ctx) {
+		EVP_CIPHER_CTX_free(aes_ctx);
+	}
 
 	size_t i, j;
 
