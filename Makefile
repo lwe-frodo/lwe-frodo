@@ -9,7 +9,7 @@ OPENSSL_INCLUDE_DIR=$(OPENSSL_DIR)/include
 OPENSSL_LIB_DIR=$(OPENSSL_DIR)/lib
 
 CFLAGS=-O3 -std=gnu11 -Wall -Wextra -I$(OPENSSL_INCLUDE_DIR) #-DDEBUG_LOGS
-LDFLAGS=-L$(OPENSSL_LIB_DIR) -lcrypto -lssl
+LDFLAGS=-L$(OPENSSL_LIB_DIR) -lcrypto -lssl -lm
 
 all:
 	$(CC) $(CFLAGS) -o generate_a generate_a.c $(LDFLAGS) 
